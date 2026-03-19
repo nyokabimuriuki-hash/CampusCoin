@@ -1,0 +1,433 @@
+/* ===================== NUDE THEME COLORS ===================== */
+:root {
+  --bg: #f7f1ec;
+  --surface: #fffaf6;
+  --surface-2: #f1e4db;
+  --primary: #b9917b;
+  --primary-dark: #946f5c;
+  --accent: #d8b7a3;
+  --text: #45362e;
+  --muted: #8a776d;
+  --border: #ead8cc;
+  --danger: #b95f5f;
+  --white: #ffffff;
+  --shadow: 0 10px 30px rgba(69, 54, 46, 0.08);
+}
+
+/* ===================== GLOBAL RESET ===================== */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+}
+
+/* ===================== PUBLIC NAVBAR ===================== */
+.navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 22px 40px;
+  background: rgba(255, 250, 246, 0.92);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+}
+
+.logo {
+  font-size: 26px;
+  font-weight: bold;
+  color: var(--primary-dark);
+  cursor: pointer;
+}
+
+.nav-links {
+  display: flex;
+  gap: 12px;
+}
+
+.nav-links button {
+  background: transparent;
+  border: none;
+  color: var(--text);
+  font-size: 14px;
+  cursor: pointer;
+  padding: 10px 14px;
+  border-radius: 10px;
+}
+
+.nav-links button:hover {
+  background: var(--surface-2);
+}
+
+/* ===================== PAGE BASE ===================== */
+.page {
+  padding: 40px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+/* ===================== HOME PAGE ===================== */
+.hero {
+  min-height: calc(100vh - 100px);
+  display: grid;
+  grid-template-columns: 1.2fr 0.8fr;
+  align-items: center;
+  gap: 30px;
+  max-width: 1180px;
+  margin: auto;
+}
+
+.eyebrow {
+  font-size: 12px;
+  letter-spacing: 2px;
+  color: var(--muted);
+  margin-bottom: 10px;
+}
+
+.hero-text h1 {
+  font-size: 54px;
+  margin: 0 0 18px;
+  line-height: 1.1;
+}
+
+.hero-subtext {
+  font-size: 18px;
+  color: var(--muted);
+  max-width: 650px;
+  line-height: 1.6;
+}
+
+.hero-buttons {
+  display: flex;
+  gap: 14px;
+  margin-top: 26px;
+  flex-wrap: wrap;
+}
+
+.hero-card {
+  background: linear-gradient(180deg, var(--surface), #f2e6de);
+  padding: 28px;
+  border-radius: 24px;
+  box-shadow: var(--shadow);
+  border: 1px solid var(--border);
+}
+
+.hero-card h3 {
+  margin-top: 0;
+  margin-bottom: 20px;
+}
+
+.mini-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 0;
+  border-bottom: 1px solid var(--border);
+}
+
+.mini-stat:last-child {
+  border-bottom: none;
+}
+
+.mini-stat span {
+  color: var(--muted);
+}
+
+.mini-stat strong {
+  color: var(--primary-dark);
+}
+
+/* ===================== BUTTONS ===================== */
+.primary-btn,
+.secondary-btn,
+.danger-btn {
+  border: none;
+  border-radius: 14px;
+  padding: 13px 18px;
+  cursor: pointer;
+  font-size: 14px;
+}
+
+.primary-btn {
+  background: var(--primary);
+  color: var(--white);
+}
+
+.primary-btn:hover {
+  background: var(--primary-dark);
+}
+
+.secondary-btn {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.secondary-btn:hover {
+  background: #e7d8ce;
+}
+
+.danger-btn {
+  background: var(--danger);
+  color: var(--white);
+}
+
+.full-btn {
+  width: 100%;
+}
+
+.admin-btn {
+  max-width: 180px;
+  margin-bottom: 16px;
+}
+
+/* ===================== CARDS ===================== */
+.content-card,
+.auth-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  padding: 26px;
+}
+
+.content-card {
+  margin-bottom: 22px;
+}
+
+.narrow-card {
+  max-width: 760px;
+  margin: 40px auto;
+}
+
+.auth-card {
+  max-width: 430px;
+  margin: 70px auto;
+}
+
+.auth-card h2 {
+  margin-top: 0;
+}
+
+.muted-text,
+.content-card p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.form-message {
+  color: var(--danger);
+  min-height: 18px;
+  font-size: 14px;
+  margin-top: 10px;
+}
+
+/* ===================== FORMS ===================== */
+label {
+  display: block;
+  margin-bottom: 6px;
+  margin-top: 10px;
+  font-size: 14px;
+  color: var(--text);
+}
+
+input,
+select {
+  width: 100%;
+  padding: 13px 14px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--white);
+  color: var(--text);
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+input:focus,
+select:focus {
+  outline: 2px solid rgba(185, 145, 123, 0.2);
+  border-color: var(--primary);
+}
+
+/* ===================== APP SHELL ===================== */
+.app-shell {
+  display: flex;
+  min-height: 100vh;
+}
+
+.sidebar {
+  width: 260px;
+  background: var(--surface-2);
+  border-right: 1px solid var(--border);
+  padding: 24px 18px;
+}
+
+.sidebar-brand h2 {
+  margin: 0;
+  color: var(--primary-dark);
+}
+
+.sidebar-brand p {
+  margin-top: 6px;
+  color: var(--muted);
+  font-size: 14px;
+}
+
+.sidebar-nav {
+  margin-top: 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sidebar-nav button {
+  background: transparent;
+  border: none;
+  text-align: left;
+  padding: 12px 14px;
+  border-radius: 12px;
+  cursor: pointer;
+  color: var(--text);
+  font-size: 14px;
+}
+
+.sidebar-nav button:hover {
+  background: rgba(255, 255, 255, 0.55);
+}
+
+.dashboard-main {
+  flex: 1;
+  padding: 28px;
+}
+
+/* ===================== DASHBOARD SECTIONS ===================== */
+.section-header {
+  margin-bottom: 18px;
+}
+
+.section-header h2 {
+  margin-bottom: 6px;
+}
+
+.section-header p {
+  margin-top: 0;
+  color: var(--muted);
+}
+
+.summary-grid,
+.report-grid {
+  display: grid;
+  gap: 18px;
+}
+
+.summary-grid {
+  grid-template-columns: repeat(3, 1fr);
+  margin-bottom: 22px;
+}
+
+.report-grid {
+  grid-template-columns: repeat(2, 1fr);
+  margin: 18px 0 24px;
+}
+
+.summary-card,
+.report-box {
+  background: linear-gradient(180deg, var(--surface), #f3e6de);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 22px;
+  box-shadow: var(--shadow);
+}
+
+.summary-card span,
+.report-box span {
+  display: block;
+  color: var(--muted);
+  margin-bottom: 10px;
+  font-size: 14px;
+}
+
+.summary-card strong,
+.report-box strong {
+  font-size: 26px;
+  color: var(--primary-dark);
+}
+
+/* ===================== TABLES ===================== */
+.table-wrap {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+}
+
+table th,
+table td {
+  text-align: left;
+  padding: 12px;
+  border-bottom: 1px solid var(--border);
+  font-size: 14px;
+}
+
+table th {
+  background: #f2e4db;
+  color: var(--primary-dark);
+}
+
+/* ===================== PROFILE ACTIONS ===================== */
+.profile-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+
+/* ===================== RESPONSIVE ===================== */
+@media (max-width: 980px) {
+  .hero {
+    grid-template-columns: 1fr;
+    padding-top: 40px;
+  }
+
+  .hero-text h1 {
+    font-size: 40px;
+  }
+
+  .summary-grid,
+  .report-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .app-shell {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+  }
+
+  .dashboard-main {
+    padding: 18px;
+  }
+
+  .page {
+    padding: 20px;
+  }
+
+  .navbar {
+    padding: 18px 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+}

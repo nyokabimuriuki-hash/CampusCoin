@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <!-- ===================== PAGE SETUP ===================== -->
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>CampusCoin</title>
+
+  <!-- ===================== STYLES ===================== -->
+  <link rel="stylesheet" href="css/style.css" />
+
+  <!-- ===================== CHART.JS ===================== -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+
+  <!-- ===================== PUBLIC NAVBAR ===================== -->
+  <header class="navbar" id="publicNavbar">
+    <div class="logo" onclick="showSection('homePage')">CampusCoin</div>
+
+    <nav class="nav-links">
+      <button onclick="showSection('aboutPage')">About Us</button>
+      <button onclick="showSection('loginPage')">Login</button>
+      <button onclick="showSection('signupPage')">Sign Up</button>
+    </nav>
+  </header>
+
+  <!-- ===================== HOME PAGE ===================== -->
+  <section id="homePage" class="page">
+    <div class="hero">
+      <div class="hero-text">
+        <p class="eyebrow">STUDENT BUDGET TRACKER</p>
+        <h1>Manage your money with clarity.</h1>
+        <p class="hero-subtext">
+          CampusCoin helps university students track daily expenses, record income,
+          view monthly reports, and build better spending habits.
+        </p>
+
+        <div class="hero-buttons">
+          <button class="primary-btn" onclick="showSection('signupPage')">Get Started</button>
+          <button class="secondary-btn" onclick="showSection('aboutPage')">Learn More</button>
+        </div>
+      </div>
+
+      <div class="hero-card">
+        <h3>Monthly Snapshot</h3>
+        <div class="mini-stat">
+          <span>Income</span>
+          <strong>KES 50,000</strong>
+        </div>
+        <div class="mini-stat">
+          <span>Expenses</span>
+          <strong>KES 23,350</strong>
+        </div>
+        <div class="mini-stat">
+          <span>Balance</span>
+          <strong>KES 26,650</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== ABOUT PAGE ===================== -->
+  <section id="aboutPage" class="page hidden">
+    <div class="content-card narrow-card">
+      <h2>About CampusCoin</h2>
+      <p>
+        CampusCoin is a web-based budgeting system developed for university students.
+        It supports daily expense recording, income tracking, monthly financial
+        reporting, and simple account management through role-based access.
+      </p>
+      <p>
+        The system was designed to reduce the difficulty students face when trying
+        to monitor how much money they spend over time. It provides a simple user
+        interface, fast data entry, and visual feedback through reports.
+      </p>
+    </div>
+  </section>
+
+  <!-- ===================== LOGIN PAGE ===================== -->
+  <section id="loginPage" class="page hidden">
+    <div class="auth-card">
+      <h2>Login</h2>
+      <p class="muted-text">Access your CampusCoin account</p>
+      <input type="email" id="loginEmail" placeholder="Email address" />
+      <input type="password" id="loginPassword" placeholder="Password" />
+
+      <button id="loginButton" type="button" class="primary-btn full-btn">Login</button>
+
+      <p id="loginMessage" class="form-message"></p>
+    </div>
+  </section>
+
+  <!-- ===================== SIGN UP PAGE ===================== -->
+  <section id="signupPage" class="page hidden">
+    <div class="auth-card">
+      <h2>Create Account</h2>
+      <p class="muted-text">Register</p>
+      <input type="text" id="signupName" placeholder="Full name" />
+      <input type="email" id="signupEmail" placeholder="Email address" />
+      <input type="password" id="signupPassword" placeholder="Password" />
+      <input type="hidden" id="signupRole" value="student" />
+
+      <button id="signupButton" type="button" class="primary-btn full-btn">Sign Up</button>
+
+      <p id="signupMessage" class="form-message"></p>
+    </div>
+  </section>
+
+  <!-- ===================== STUDENT APP SHELL ===================== -->
+  <section id="studentDashboard" class="app-shell hidden">
+    <!-- ---------- Student Sidebar ---------- -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h2>CampusCoin</h2>
+        <p>Student Dashboard</p>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button onclick="showStudentSection('studentHome')">Dashboard</button>
+        <button onclick="showStudentSection('studentExpenses')">Expenses</button>
+        <button onclick="showStudentSection('studentIncome')">Income</button>
+        <button onclick="showStudentSection('studentReports')">Reports</button>
+        <button onclick="showStudentSection('studentProfile')">Profile</button>
+        <button onclick="logoutUser()">Log Out</button>
+      </nav>
+    </aside>
+
+    <!-- ---------- Student Main Content ---------- -->
+    <main class="dashboard-main">
+
+      <!-- ===== Student Home ===== -->
+      <section id="studentHome" class="student-section">
+        <div class="section-header">
+          <h2 id="studentWelcome">Welcome</h2>
+          <p>Your financial overview</p>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <span>Total Income</span>
+            <strong id="studentTotalIncome">KES 0</strong>
+          </div>
+
+          <div class="summary-card">
+            <span>Total Spending</span>
+            <strong id="studentTotalSpend">KES 0</strong>
+          </div>
+
+          <div class="summary-card">
+            <span>Balance</span>
+            <strong id="studentBalance">KES 0</strong>
+          </div>
+        </div>
+
+        <div class="report-grid">
+          <div class="content-card">
+            <h3>Spending By Category</h3>
+            <canvas id="expenseBreakdownChart"></canvas>
+          </div>
+
+          <div class="content-card">
+            <h3>Budget Vs Actual</h3>
+            <canvas id="budgetComparisonChart"></canvas>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Student Expenses ===== -->
+      <section id="studentExpenses" class="student-section hidden">
+        <div class="section-header">
+          <h2>Expenses</h2>
+          <p>Record daily spending</p>
+        </div>
+
+        <div class="content-card">
+          <h3>Add Expense</h3>
+
+          <label for="expenseBudget">Budget</label>
+          <input type="number" id="expenseBudget" placeholder="Enter expense budget" />
+
+          <label for="expenseAmount">Amount</label>
+          <input type="number" id="expenseAmount" placeholder="Enter amount" />
+
+          <label for="expenseCategory">Expense Name or Category</label>
+          <input
+            type="text"
+            id="expenseCategory"
+            list="expenseCategorySuggestions"
+            placeholder="e.g. Lunch, Bus fare, Rent"
+          />
+          <datalist id="expenseCategorySuggestions">
+            <option value="Food"></option>
+            <option value="Transport"></option>
+            <option value="Rent"></option>
+            <option value="Data"></option>
+            <option value="Entertainment"></option>
+            <option value="Books"></option>
+          </datalist>
+
+          <label for="expenseDate">Date</label>
+          <input type="date" id="expenseDate" />
+
+          <button class="primary-btn full-btn" onclick="addExpenseRecord()">Add Expense</button>
+        </div>
+
+        <div class="content-card">
+          <h3>Expense Records</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Category</th>
+                  <th>Budget</th>
+                  <th>Actual</th>
+                  <th>Variance</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="expenseTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Student Income ===== -->
+      <section id="studentIncome" class="student-section hidden">
+        <div class="section-header">
+          <h2>Income</h2>
+          <p>Record income sources</p>
+        </div>
+
+        <div class="content-card">
+          <h3>Add Income</h3>
+
+          <label for="incomeType">Income Type</label>
+          <select id="incomeType">
+            <option value="Allowance">Allowance</option>
+            <option value="Business">Business</option>
+            <option value="Financial Aid">Financial Aid</option>
+            <option value="Stipend">Stipend</option>
+            <option value="Other">Other</option>
+          </select>
+
+          <label for="incomeAmount">Amount</label>
+          <input type="number" id="incomeAmount" placeholder="Enter income amount" />
+
+          <label for="incomeDate">Date</label>
+          <input type="date" id="incomeDate" />
+
+          <button class="primary-btn full-btn" onclick="addIncomeRecord()">Add Income</button>
+        </div>
+
+        <div class="content-card">
+          <h3>Income Records</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Type</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody id="incomeTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Student Reports ===== -->
+      <section id="studentReports" class="student-section hidden">
+        <div class="section-header">
+          <h2>Reports</h2>
+          <p>Monthly spending and income summary</p>
+        </div>
+
+        <div class="content-card">
+          <label for="monthFilter">Select Month</label>
+          <input type="month" id="monthFilter" />
+
+          <button class="primary-btn full-btn" onclick="loadMonthlyReport()">View Report</button>
+
+          <div class="report-grid">
+            <div class="report-box">
+              <span>Total Monthly Spend</span>
+              <strong id="monthlySpend">KES 0</strong>
+            </div>
+            <div class="report-box">
+              <span>Total Monthly Income</span>
+              <strong id="monthlyIncome">KES 0</strong>
+            </div>
+          </div>
+
+          <canvas id="reportChart"></canvas>
+        </div>
+      </section>
+
+      <!-- ===== Student Profile ===== -->
+      <section id="studentProfile" class="student-section hidden">
+        <div class="section-header">
+          <h2>Profile</h2>
+          <p>Your account details</p>
+        </div>
+
+        <div class="content-card">
+          <p><strong>Name:</strong> <span id="profileName">-</span></p>
+          <p><strong>Email:</strong> <span id="profileEmail">-</span></p>
+          <p><strong>Role:</strong> <span id="profileRole">-</span></p>
+
+          <div class="profile-actions">
+            <button class="primary-btn" onclick="logoutUser()">Log Out</button>
+            <button class="danger-btn" onclick="deleteAccount()">Delete Account</button>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </section>
+
+  <!-- ===================== ADMIN APP SHELL ===================== -->
+  <section id="adminDashboard" class="app-shell hidden">
+    <!-- ---------- Admin Sidebar ---------- -->
+    <aside class="sidebar">
+      <div class="sidebar-brand">
+        <h2>CampusCoin</h2>
+        <p>Administrator</p>
+      </div>
+
+      <nav class="sidebar-nav">
+        <button onclick="showAdminSection('adminHome')">Dashboard</button>
+        <button onclick="showAdminSection('adminUsers')">Manage Users</button>
+        <button onclick="showAdminSection('adminRecords')">View Records</button>
+        <button onclick="showAdminSection('adminReports')">Reports</button>
+        <button onclick="logoutUser()">Log Out</button>
+      </nav>
+    </aside>
+
+    <!-- ---------- Admin Main Content ---------- -->
+    <main class="dashboard-main">
+
+      <!-- ===== Admin Home ===== -->
+      <section id="adminHome" class="admin-section">
+        <div class="section-header">
+          <h2 id="adminWelcome">Welcome</h2>
+          <p>System overview</p>
+        </div>
+
+        <div class="summary-grid">
+          <div class="summary-card">
+            <span>Total Users</span>
+            <strong id="totalUsers">0</strong>
+          </div>
+
+          <div class="summary-card">
+            <span>Total Records</span>
+            <strong id="totalRecords">0</strong>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Admin Users ===== -->
+      <section id="adminUsers" class="admin-section hidden">
+        <div class="section-header">
+          <h2>Manage Users</h2>
+          <p>View all registered users</p>
+        </div>
+
+        <div class="content-card">
+          <button class="primary-btn admin-btn" onclick="loadAllUsers()">Refresh Users</button>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Email</th>
+                  <th>Role</th>
+                </tr>
+              </thead>
+              <tbody id="usersTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Admin Records ===== -->
+      <section id="adminRecords" class="admin-section hidden">
+        <div class="section-header">
+          <h2>View All Records</h2>
+          <p>Review all stored transactions</p>
+        </div>
+
+        <div class="content-card">
+          <button class="primary-btn admin-btn" onclick="loadAllSystemRecords()">Refresh Records</button>
+
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>User ID</th>
+                  <th>Type</th>
+                  <th>Category</th>
+                  <th>Amount</th>
+                  <th>Budget</th>
+                  <th>Date</th>
+                </tr>
+              </thead>
+              <tbody id="adminRecordsTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ===== Admin Reports ===== -->
+      <section id="adminReports" class="admin-section hidden">
+        <div class="section-header">
+          <h2>Reports</h2>
+          <p>System-level summary</p>
+        </div>
+
+        <div class="content-card">
+          <button class="primary-btn admin-btn" onclick="loadAdminSummary()">Generate Summary</button>
+
+          <div class="report-grid">
+            <div class="report-box">
+              <span>Total Income Records</span>
+              <strong id="adminIncomeTotal">0</strong>
+            </div>
+
+            <div class="report-box">
+              <span>Total Expense Records</span>
+              <strong id="adminExpenseTotal">0</strong>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </section>
+
+  <!-- ===================== SCRIPTS ===================== -->
+  <script type="module" src="js/navigation.js"></script>
+  <script type="module" src="js/auth.js"></script>
+  <script type="module" src="js/student.js"></script>
+  <script type="module" src="js/admin.js"></script>
+</body>
+</html>
