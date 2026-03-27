@@ -407,7 +407,7 @@ table th {
   color: var(--primary-dark);
 }
 
-/* ===================== PROFILE ACTIONS ===================== */
+/* ===================== PROFILE ACTIONS .===================== */
 .profile-actions {
   display: flex;
   gap: 12px;
