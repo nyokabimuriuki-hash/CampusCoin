@@ -366,6 +366,28 @@ select:focus {
   overflow-x: auto;
 }
 
+.record-filter {
+  display: flex;
+  align-items: end;
+  flex-wrap: wrap;
+  gap: 12px;
+  max-width: 420px;
+  margin-bottom: 8px;
+}
+
+.record-filter label {
+  margin: 0;
+  white-space: nowrap;
+}
+
+.record-filter select {
+  margin-bottom: 0;
+}
+
+.record-month-picker {
+  max-width: 170px;
+}
+
 table {
   width: 100%;
   border-collapse: collapse;

@@ -136,6 +136,11 @@
           <p>Your financial overview</p>
         </div>
 
+        <div class="content-card">
+          <label for="overviewMonth">Overview Month</label>
+          <input type="month" id="overviewMonth" onchange="loadOverviewMonth()" />
+        </div>
+
         <div class="summary-grid">
           <div class="summary-card">
             <span>Total Income</span>
@@ -206,6 +211,21 @@
 
         <div class="content-card">
           <h3>Expense Records</h3>
+          <div class="record-filter">
+            <label for="expenseRecordFilter">Show</label>
+            <select id="expenseRecordFilter" onchange="handleRecordFilterChange('expense')">
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="custom-month">Choose Month</option>
+            </select>
+            <input
+              type="month"
+              id="expenseRecordMonth"
+              class="record-month-picker hidden"
+              onchange="applyRecordFilters()"
+            />
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
@@ -213,7 +233,7 @@
                   <th>Category</th>
                   <th>Budget</th>
                   <th>Actual</th>
-                  <th>Variance</th>
+                  <th>Balance</th>
                   <th>Date</th>
                   <th>Action</th>
                 </tr>
@@ -254,6 +274,21 @@
 
         <div class="content-card">
           <h3>Income Records</h3>
+          <div class="record-filter">
+            <label for="incomeRecordFilter">Show</label>
+            <select id="incomeRecordFilter" onchange="handleRecordFilterChange('income')">
+              <option value="today">Today</option>
+              <option value="week">This Week</option>
+              <option value="month">This Month</option>
+              <option value="custom-month">Choose Month</option>
+            </select>
+            <input
+              type="month"
+              id="incomeRecordMonth"
+              class="record-month-picker hidden"
+              onchange="applyRecordFilters()"
+            />
+          </div>
           <div class="table-wrap">
             <table>
               <thead>
