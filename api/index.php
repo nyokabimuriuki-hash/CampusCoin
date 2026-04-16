@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+// ===== API bootstrap and route setup =====
 require __DIR__ . '/bootstrap.php';
 
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
@@ -10,6 +11,7 @@ $apiPosition = strpos($path, '/api');
 $apiPath = $apiPosition === false ? '/' : substr($path, $apiPosition + 4);
 $apiPath = $apiPath === '' ? '/' : $apiPath;
 
+// ===== Health check route =====
 if ($method === 'GET' && $apiPath === '/health') {
     jsonResponse(200, [
         'ok' => true,
@@ -17,6 +19,7 @@ if ($method === 'GET' && $apiPath === '/health') {
     ]);
 }
 
+// ===== Create or update a user profile =====
 if ($method === 'POST' && $apiPath === '/users/sync') {
     $body = readJsonBody();
     $firebaseUid = trim((string) ($body['firebaseUid'] ?? ''));
@@ -57,6 +60,7 @@ if ($method === 'POST' && $apiPath === '/users/sync') {
     jsonResponse(200, ['user' => $user]);
 }
 
+// ===== Get records for the current student =====
 if ($method === 'GET' && $apiPath === '/records') {
     $user = requireUser();
 
@@ -83,6 +87,7 @@ if ($method === 'GET' && $apiPath === '/records') {
     jsonResponse(200, ['records' => $records]);
 }
 
+// ===== Add a student income or expense record =====
 if ($method === 'POST' && $apiPath === '/records') {
     $body = readJsonBody();
     $firebaseUid = trim((string) ($body['firebaseUid'] ?? ''));
@@ -129,6 +134,7 @@ if ($method === 'POST' && $apiPath === '/records') {
     jsonResponse(201, ['message' => 'Record created successfully.']);
 }
 
+// ===== Delete an income or expense record =====
 if ($method === 'DELETE' && preg_match('#^/records/(\d+)$#', $apiPath, $matches) === 1) {
     $user = requireUser();
     $recordId = (int) $matches[1];
@@ -158,6 +164,7 @@ if ($method === 'DELETE' && preg_match('#^/records/(\d+)$#', $apiPath, $matches)
     jsonResponse(200, ['message' => 'Record deleted successfully.']);
 }
 
+// ===== Admin users route =====
 if ($method === 'GET' && $apiPath === '/admin/users') {
     requireAdmin();
 
@@ -170,6 +177,7 @@ if ($method === 'GET' && $apiPath === '/admin/users') {
     jsonResponse(200, ['users' => $statement->fetchAll()]);
 }
 
+// ===== Admin records route =====
 if ($method === 'GET' && $apiPath === '/admin/records') {
     requireAdmin();
 
@@ -196,6 +204,7 @@ if ($method === 'GET' && $apiPath === '/admin/records') {
     jsonResponse(200, ['records' => $records]);
 }
 
+// ===== Admin summary route =====
 if ($method === 'GET' && $apiPath === '/admin/summary') {
     requireAdmin();
 
@@ -209,4 +218,5 @@ if ($method === 'GET' && $apiPath === '/admin/summary') {
     ]);
 }
 
+// ===== Fallback for unknown API routes =====
 jsonResponse(404, ['error' => 'API route not found.']);

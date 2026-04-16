@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+// ===== Database connection settings =====
 return [
     'database' => [
         'host' => '127.0.0.1',

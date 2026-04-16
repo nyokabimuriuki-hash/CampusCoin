@@ -1,6 +1,8 @@
+-- ===== Database setup =====
 CREATE DATABASE IF NOT EXISTS campuscoin;
 USE campuscoin;
 
+-- ===== Users table =====
 CREATE TABLE IF NOT EXISTS users (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     firebase_uid VARCHAR(128) NOT NULL UNIQUE,
@@ -10,6 +12,7 @@ CREATE TABLE IF NOT EXISTS users (
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+-- ===== Income records table =====
 CREATE TABLE IF NOT EXISTS income (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id INT UNSIGNED NOT NULL,
@@ -22,6 +25,7 @@ CREATE TABLE IF NOT EXISTS income (
         ON DELETE CASCADE
 );
 
+-- ===== Expense records table =====
 CREATE TABLE IF NOT EXISTS expenses (
     id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
     user_id INT UNSIGNED NOT NULL,

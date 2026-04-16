@@ -1,3 +1,4 @@
+// ===== Authentication imports =====
 import { auth } from "./firebase-config.js";
 import { apiRequest } from "./api-client.js";
 import {
@@ -9,6 +10,7 @@ import {
   signOut
 } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+// ===== Sync Firebase user with backend database =====
 async function syncUser(user, fullNameOverride = "") {
   const payload = await apiRequest("/api/users/sync", {
     method: "POST",
@@ -23,6 +25,7 @@ async function syncUser(user, fullNameOverride = "") {
   return payload.user;
 }
 
+// ===== Login/signup message helper =====
 function setAuthMessage(message) {
   const loginMessage = document.getElementById("loginMessage");
   const signupMessage = document.getElementById("signupMessage");
@@ -31,6 +34,7 @@ function setAuthMessage(message) {
   if (signupMessage) signupMessage.innerText = message;
 }
 
+// ===== Public UI state =====
 function showPublicUI() {
   document.getElementById("publicNavbar")?.classList.remove("hidden");
   document.getElementById("homePage")?.classList.remove("hidden");
@@ -41,6 +45,7 @@ function showPublicUI() {
   document.getElementById("adminDashboard")?.classList.add("hidden");
 }
 
+// ===== Student UI state =====
 async function showStudentUI(userData) {
   document.getElementById("publicNavbar")?.classList.add("hidden");
   document.getElementById("homePage")?.classList.add("hidden");
@@ -61,6 +66,7 @@ async function showStudentUI(userData) {
   }
 }
 
+// ===== Admin UI state =====
 async function showAdminUI(userData) {
   document.getElementById("publicNavbar")?.classList.add("hidden");
   document.getElementById("homePage")?.classList.add("hidden");
@@ -76,6 +82,7 @@ async function showAdminUI(userData) {
   if (window.loadAllSystemRecords) await window.loadAllSystemRecords();
 }
 
+// ===== Attach login and signup button events =====
 function bindAuthButtons() {
   const signupButton = document.getElementById("signupButton");
   const loginButton = document.getElementById("loginButton");
@@ -91,6 +98,7 @@ function bindAuthButtons() {
   }
 }
 
+// ===== Register new student account =====
 window.registerUser = async function () {
   const fullName = document.getElementById("signupName").value.trim();
   const email = document.getElementById("signupEmail").value.trim();
@@ -113,6 +121,7 @@ window.registerUser = async function () {
   }
 };
 
+// ===== Login existing user =====
 window.loginUser = async function () {
   const email = document.getElementById("loginEmail").value.trim();
   const password = document.getElementById("loginPassword").value;
@@ -134,6 +143,7 @@ window.loginUser = async function () {
   }
 };
 
+// ===== Logout current user =====
 window.logoutUser = async function () {
   if (window.resetStudentUI) {
     window.resetStudentUI();
@@ -144,10 +154,12 @@ window.logoutUser = async function () {
   showPublicUI();
 };
 
+// ===== Delete account placeholder =====
 window.deleteAccount = async function () {
   alert("Delete account is not included in the simplified version.");
 };
 
+// ===== React when Firebase login state changes =====
 onAuthStateChanged(auth, async (user) => {
   if (!user) {
     window.currentUser = null;
@@ -172,5 +184,6 @@ onAuthStateChanged(auth, async (user) => {
   }
 });
 
+// ===== Initial event binding =====
 bindAuthButtons();
 document.addEventListener("DOMContentLoaded", bindAuthButtons);

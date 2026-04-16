@@ -1,35 +1,15 @@
 import { apiRequest, escapeHtml } from "./api-client.js";
 
+// ===== Student dashboard state =====
 let budgetChart;
 let expenseChart;
 let monthlyReportChart;
 let currentRecords = [];
 
-// Formatting helpers
+// ===== Formatting and sorting helpers =====
 function formatCurrency(value) {
   const amount = Number(value || 0);
   return `KES ${amount.toLocaleString()}`;
-}
-
-function setElementText(elementId, value) {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.innerText = value;
-  }
-}
-
-function setElementValue(elementId, value) {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.value = value;
-  }
-}
-
-function setElementHtml(elementId, value) {
-  const element = document.getElementById(elementId);
-  if (element) {
-    element.innerHTML = value;
-  }
 }
 
 function sortByDateDesc(records) {
@@ -50,11 +30,11 @@ function sortByDateAsc(records) {
   });
 }
 
-// Budget helpers
 function getMonthKey(date) {
   return String(date || "").slice(0, 7);
 }
 
+// ===== Budget calculation helpers =====
 function getBudgetGroupKey(category, date) {
   return `${getMonthKey(date)}::${String(category || "").trim().toLowerCase()}`;
 }
@@ -91,11 +71,11 @@ function getMonthlyBudgetEntries(records) {
   }));
 }
 
-// Date and filter helpers
 function parseRecordDate(value) {
   return value ? new Date(`${value}T00:00:00`) : null;
 }
 
+// ===== Date filter helpers =====
 function getStartOfWeek(date) {
   const start = new Date(date);
   const day = start.getDay();
@@ -151,59 +131,32 @@ function getSelectedMonthValue(elementId) {
   return document.getElementById(elementId)?.value || "";
 }
 
-function getOverviewMonth() {
-  const overviewMonth = document.getElementById("overviewMonth");
-  const defaultMonth = new Date().toISOString().slice(0, 7);
-
-  if (!overviewMonth) {
-    return defaultMonth;
-  }
-
-  if (!overviewMonth.value) {
-    overviewMonth.value = defaultMonth;
-  }
-
-  return overviewMonth.value;
-}
-
-function getOverviewRecords(records) {
-  const selectedMonth = getOverviewMonth();
-  return records.filter((record) => String(record.date || "").startsWith(selectedMonth));
-}
-
-function getRecordsByType(records, type) {
-  return records.filter((record) => record.type === type);
-}
-
-function getFilteredRecords(records, type, filterId, monthId) {
-  return sortByDateDesc(
-    getRecordsByType(records, type).filter((record) =>
-      matchesRecordFilter(record, getFilterValue(filterId), getSelectedMonthValue(monthId))
-    )
-  );
-}
-
 function destroyChart(chartRef) {
   if (chartRef) {
     chartRef.destroy();
   }
 }
 
-// Dashboard rendering
+// ===== Summary totals =====
 function updateSummary(records) {
-  const overviewRecords = getOverviewRecords(records);
-
-  const incomeTotal = getRecordsByType(overviewRecords, "Income")
+  const incomeTotal = records
+    .filter((record) => record.type === "Income")
     .reduce((sum, record) => sum + Number(record.amount || 0), 0);
 
-  const expenseTotal = getRecordsByType(overviewRecords, "Expenditure")
+  const expenseTotal = records
+    .filter((record) => record.type === "Expenditure")
     .reduce((sum, record) => sum + Number(record.amount || 0), 0);
 
-  setElementText("studentTotalIncome", formatCurrency(incomeTotal));
-  setElementText("studentTotalSpend", formatCurrency(expenseTotal));
-  setElementText("studentBalance", formatCurrency(incomeTotal - expenseTotal));
+  const studentTotalIncome = document.getElementById("studentTotalIncome");
+  const studentTotalSpend = document.getElementById("studentTotalSpend");
+  const studentBalance = document.getElementById("studentBalance");
+
+  if (studentTotalIncome) studentTotalIncome.innerText = formatCurrency(incomeTotal);
+  if (studentTotalSpend) studentTotalSpend.innerText = formatCurrency(expenseTotal);
+  if (studentBalance) studentBalance.innerText = formatCurrency(incomeTotal - expenseTotal);
 }
 
+// ===== Expense table rendering =====
 function renderExpenseTable(records) {
   const expenseTableBody = document.getElementById("expenseTableBody");
   if (!expenseTableBody) return;
@@ -211,7 +164,7 @@ function renderExpenseTable(records) {
   const budgetMap = buildMonthlyBudgetMap(records);
   const balanceByRecordId = new Map();
   const runningSpendByCategory = new Map();
-  sortByDateAsc(getRecordsByType(records, "Expenditure")).forEach((record) => {
+  sortByDateAsc(records.filter((record) => record.type === "Expenditure")).forEach((record) => {
     const key = getBudgetGroupKey(record.category, record.date);
     const budget = getEffectiveBudget(record, budgetMap);
     const updatedSpend = (runningSpendByCategory.get(key) || 0) + Number(record.amount || 0);
@@ -219,11 +172,16 @@ function renderExpenseTable(records) {
     balanceByRecordId.set(String(record.id), budget - updatedSpend);
   });
 
-  const expenses = getFilteredRecords(
-    records,
-    "Expenditure",
-    "expenseRecordFilter",
-    "expenseRecordMonth"
+  const expenses = sortByDateDesc(
+    records
+      .filter((record) => record.type === "Expenditure")
+      .filter((record) =>
+        matchesRecordFilter(
+          record,
+          getFilterValue("expenseRecordFilter"),
+          getSelectedMonthValue("expenseRecordMonth")
+        )
+      )
   );
 
   if (!expenses.length) {
@@ -256,11 +214,22 @@ function renderExpenseTable(records) {
     .join("");
 }
 
+// ===== Income table rendering =====
 function renderIncomeTable(records) {
   const incomeTableBody = document.getElementById("incomeTableBody");
   if (!incomeTableBody) return;
 
-  const incomes = getFilteredRecords(records, "Income", "incomeRecordFilter", "incomeRecordMonth");
+  const incomes = sortByDateDesc(
+    records
+      .filter((record) => record.type === "Income")
+      .filter((record) =>
+        matchesRecordFilter(
+          record,
+          getFilterValue("incomeRecordFilter"),
+          getSelectedMonthValue("incomeRecordMonth")
+        )
+      )
+  );
 
   if (!incomes.length) {
     incomeTableBody.innerHTML = `
@@ -285,18 +254,15 @@ function renderIncomeTable(records) {
     .join("");
 }
 
+// ===== Home page charts =====
 function renderHomeCharts(records) {
   const expenseBreakdownChart = document.getElementById("expenseBreakdownChart");
   const budgetComparisonChart = document.getElementById("budgetComparisonChart");
 
   if (!expenseBreakdownChart || !budgetComparisonChart) return;
 
-  const overviewMonth = getOverviewMonth();
-  const overviewRecords = getOverviewRecords(records);
-  const expenses = getRecordsByType(overviewRecords, "Expenditure");
-  const monthlyBudgetEntries = getMonthlyBudgetEntries(records).filter((entry) =>
-    entry.key.startsWith(`${overviewMonth}::`)
-  );
+  const expenses = records.filter((record) => record.type === "Expenditure");
+  const monthlyBudgetEntries = getMonthlyBudgetEntries(records);
   const categoryTotals = expenses.reduce((totals, record) => {
     const key = record.category || "Other";
     totals[key] = (totals[key] || 0) + Number(record.amount || 0);
@@ -353,6 +319,7 @@ function renderHomeCharts(records) {
   });
 }
 
+// ===== Monthly report section =====
 function renderMonthlyReport(records) {
   const monthlySpend = document.getElementById("monthlySpend");
   const monthlyIncome = document.getElementById("monthlyIncome");
@@ -366,8 +333,8 @@ function renderMonthlyReport(records) {
   }
 
   const monthlyRecords = records.filter((record) => (record.date || "").startsWith(selectedMonth));
-  const monthlyExpenses = getRecordsByType(monthlyRecords, "Expenditure");
-  const monthlyIncomes = getRecordsByType(monthlyRecords, "Income");
+  const monthlyExpenses = monthlyRecords.filter((record) => record.type === "Expenditure");
+  const monthlyIncomes = monthlyRecords.filter((record) => record.type === "Income");
   const monthlyBudgetEntries = getMonthlyBudgetEntries(records).filter((entry) =>
     entry.key.startsWith(`${selectedMonth}::`)
   );
@@ -410,13 +377,8 @@ function renderMonthlyReport(records) {
         },
         tooltip: {
           callbacks: {
-            label: (context) => `${context.label}: ${formatCurrency(context.raw)}`,
-            afterBody: (tooltipItems) => {
-              const hoveredLabel = tooltipItems[0]?.label || "";
-              if (hoveredLabel !== "Actual Spend" || !Object.keys(monthlyCategoryTotals).length) {
-                return "";
-              }
-
+            afterBody: () => {
+              if (!Object.keys(monthlyCategoryTotals).length) return "";
               return Object.entries(monthlyCategoryTotals).map(
                 ([category, total]) => `${category}: ${formatCurrency(total)}`
               );
@@ -428,6 +390,7 @@ function renderMonthlyReport(records) {
   });
 }
 
+// ===== Full dashboard refresh =====
 function renderStudentDashboard(records) {
   currentRecords = records;
   updateSummary(records);
@@ -437,7 +400,7 @@ function renderStudentDashboard(records) {
   renderMonthlyReport(records);
 }
 
-// Student actions
+// ===== Load records from the backend =====
 window.initRealTimeData = async function () {
   try {
     if (!window.currentUser?.firebaseUid) {
@@ -451,15 +414,12 @@ window.initRealTimeData = async function () {
   }
 };
 
+// ===== Monthly report refresh button/filter =====
 window.loadMonthlyReport = function () {
   renderMonthlyReport(currentRecords);
 };
 
-window.loadOverviewMonth = function () {
-  updateSummary(currentRecords);
-  renderHomeCharts(currentRecords);
-};
-
+// ===== Expense and income table filters =====
 window.handleRecordFilterChange = function (type) {
   const select = document.getElementById(`${type}RecordFilter`);
   const monthInput = document.getElementById(`${type}RecordMonth`);
@@ -484,6 +444,7 @@ window.applyRecordFilters = function () {
   renderIncomeTable(currentRecords);
 };
 
+// ===== Add a new expense =====
 window.addExpenseRecord = async function () {
   const amount = parseFloat(document.getElementById("expenseAmount").value);
   const rawBudget = document.getElementById("expenseBudget").value.trim();
@@ -528,6 +489,7 @@ window.addExpenseRecord = async function () {
   }
 };
 
+// ===== Add a new income =====
 window.addIncomeRecord = async function () {
   const amount = parseFloat(document.getElementById("incomeAmount").value);
   const category = document.getElementById("incomeType").value;
@@ -565,6 +527,7 @@ window.addIncomeRecord = async function () {
   }
 };
 
+// ===== Delete a record =====
 window.deleteRecord = async function (recordId) {
   const uid = encodeURIComponent(window.currentUser?.firebaseUid || "");
   await apiRequest(`/api/records/${recordId}?firebaseUid=${uid}`, {
@@ -574,20 +537,33 @@ window.deleteRecord = async function (recordId) {
   await window.initRealTimeData();
 };
 
+// ===== Clear student dashboard after logout/reset =====
 window.resetStudentUI = function () {
   currentRecords = [];
-  setElementText("studentTotalIncome", "KES 0");
-  setElementText("studentTotalSpend", "KES 0");
-  setElementText("studentBalance", "KES 0");
-  setElementHtml("expenseTableBody", "");
-  setElementHtml("incomeTableBody", "");
-  setElementText("monthlySpend", "KES 0");
-  setElementText("monthlyIncome", "KES 0");
-  setElementText("studentWelcome", "Welcome");
-  setElementText("profileName", "-");
-  setElementText("profileEmail", "-");
-  setElementText("profileRole", "-");
-  setElementValue("overviewMonth", "");
+
+  const studentTotalIncome = document.getElementById("studentTotalIncome");
+  const studentTotalSpend = document.getElementById("studentTotalSpend");
+  const studentBalance = document.getElementById("studentBalance");
+  const expenseTableBody = document.getElementById("expenseTableBody");
+  const incomeTableBody = document.getElementById("incomeTableBody");
+  const monthlySpend = document.getElementById("monthlySpend");
+  const monthlyIncome = document.getElementById("monthlyIncome");
+  const studentWelcome = document.getElementById("studentWelcome");
+  const profileName = document.getElementById("profileName");
+  const profileEmail = document.getElementById("profileEmail");
+  const profileRole = document.getElementById("profileRole");
+
+  if (studentTotalIncome) studentTotalIncome.innerText = "KES 0";
+  if (studentTotalSpend) studentTotalSpend.innerText = "KES 0";
+  if (studentBalance) studentBalance.innerText = "KES 0";
+  if (expenseTableBody) expenseTableBody.innerHTML = "";
+  if (incomeTableBody) incomeTableBody.innerHTML = "";
+  if (monthlySpend) monthlySpend.innerText = "KES 0";
+  if (monthlyIncome) monthlyIncome.innerText = "KES 0";
+  if (studentWelcome) studentWelcome.innerText = "Welcome";
+  if (profileName) profileName.innerText = "-";
+  if (profileEmail) profileEmail.innerText = "-";
+  if (profileRole) profileRole.innerText = "-";
 
   destroyChart(expenseChart);
   destroyChart(budgetChart);

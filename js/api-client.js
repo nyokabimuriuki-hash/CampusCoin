@@ -1,3 +1,4 @@
+// ===== Response parsing helper =====
 async function parseResponse(response) {
   const contentType = response.headers.get("content-type") || "";
 
@@ -9,6 +10,7 @@ async function parseResponse(response) {
   return text ? { message: text } : {};
 }
 
+// ===== Shared API request helper =====
 export async function apiRequest(path, options = {}) {
   const normalizedPath = path.startsWith("/api/") ? `.${path}` : path;
   const requestOptions = {
@@ -34,6 +36,7 @@ export async function apiRequest(path, options = {}) {
   return payload;
 }
 
+// ===== HTML escaping helper =====
 export function escapeHtml(value) {
   return String(value ?? "").replace(/[&<>"']/g, (char) => {
     const entities = {

@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+// ===== Load project configuration =====
 function config(): array
 {
     static $config = null;
@@ -13,6 +14,7 @@ function config(): array
     return $config;
 }
 
+// ===== Create or reuse the database connection =====
 function db(): PDO
 {
     static $pdo = null;
@@ -43,6 +45,7 @@ function db(): PDO
     return $pdo;
 }
 
+// ===== Send a JSON API response =====
 function jsonResponse(int $statusCode, array $payload): void
 {
     http_response_code($statusCode);
@@ -51,6 +54,7 @@ function jsonResponse(int $statusCode, array $payload): void
     exit;
 }
 
+// ===== Read JSON from the request body =====
 function readJsonBody(): array
 {
     $raw = file_get_contents('php://input');
@@ -66,6 +70,7 @@ function readJsonBody(): array
     return $data;
 }
 
+// ===== Find a user by Firebase UID =====
 function findUserByFirebaseUid(string $firebaseUid): ?array
 {
     $statement = db()->prepare(
@@ -77,6 +82,7 @@ function findUserByFirebaseUid(string $firebaseUid): ?array
     return $user ?: null;
 }
 
+// ===== Require a logged-in user =====
 function requireUser(): array
 {
     $firebaseUid = trim((string) ($_GET['firebaseUid'] ?? ''));
@@ -92,6 +98,7 @@ function requireUser(): array
     return $user;
 }
 
+// ===== Require an admin user =====
 function requireAdmin(): array
 {
     $user = requireUser();

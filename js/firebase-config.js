@@ -1,6 +1,8 @@
+// ===== Firebase SDK imports =====
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
+// ===== Firebase project settings =====
 const firebaseConfig = {
   apiKey: "AIzaSyCL1Qz5WHfFsEaOeayTcbY4xuAq6Lj516M",
   authDomain: "student-budget-tracker-15e20.firebaseapp.com",
@@ -11,5 +13,6 @@ const firebaseConfig = {
   measurementId: "G-1XESTRZZBG"
 };
 
+// ===== Firebase app and auth setup =====
 const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);

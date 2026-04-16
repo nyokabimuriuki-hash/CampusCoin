@@ -1,9 +1,11 @@
 import { apiRequest, escapeHtml } from "./api-client.js";
 
+// ===== Formatting helper =====
 function formatCurrency(value) {
   return `KES ${Number(value || 0).toLocaleString()}`;
 }
 
+// ===== Load admin users table =====
 window.loadAllUsers = async function () {
   const tbody = document.getElementById("usersTableBody");
   if (!tbody) return;
@@ -29,6 +31,7 @@ window.loadAllUsers = async function () {
   document.getElementById("totalUsers").textContent = users.length;
 };
 
+// ===== Load admin records table =====
 window.loadAllSystemRecords = async function () {
   const tbody = document.getElementById("adminRecordsTableBody");
   if (!tbody) return;
@@ -57,6 +60,7 @@ window.loadAllSystemRecords = async function () {
   document.getElementById("totalRecords").textContent = records.length;
 };
 
+// ===== Load admin summary totals =====
 window.loadAdminSummary = async function () {
   const uid = encodeURIComponent(window.currentUser?.firebaseUid || "");
   const payload = await apiRequest(`/api/admin/summary?firebaseUid=${uid}`);
@@ -65,6 +69,7 @@ window.loadAdminSummary = async function () {
   document.getElementById("totalRecords").textContent = payload.totalRecords ?? 0;
 };
 
+// ===== Auto-refresh admin data while dashboard is open =====
 setInterval(async () => {
   const dashboard = document.getElementById("adminDashboard");
   if (!dashboard || dashboard.classList.contains("hidden")) {
